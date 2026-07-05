@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Collections — AdrenaLuxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --gold: #D4AF37;
+    --gold-dim: rgba(212,175,55,0.15);
+    --gold-line: rgba(212,175,55,0.4);
+    --purple: #B14EFF;
+    --purple-glow: rgba(177,78,255,0.55);
+    --navy: #0D1B3D;
+  }
+  [data-theme="dark"] {
+    --bg: #0F0F0F; --bg2: #141414; --bg3: #1a1a1a;
+    --text: #F8F8F8; --text-muted: rgba(248,248,248,0.72);
+    --border: rgba(212,175,55,0.18);
+  }
+  [data-theme="light"] {
+    --bg: #FFFFFF; --bg2: #F5F5F5; --bg3: #EBEBEB;
+    --text: #222222; --text-muted: rgba(34,34,34,0.68);
+    --border: rgba(212,175,55,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.35s, color 0.35s; overflow-x: hidden; }
+  img { display: block; max-width: 100%; }
+  a { text-decoration: none; color: inherit; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 68px;
+    background: rgba(15,15,15,0.72); backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border); transition: background 0.35s;
+  }
+  [data-theme="light"] nav { background: rgba(255,255,255,0.82); }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; letter-spacing: 0.08em; color: var(--text); }
+  .logo svg { width: 36px; height: 36px; }
+  .nav-links { display: flex; gap: 2.4rem; list-style: none; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+  .nav-links a { color: var(--text-muted); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--purple); }
+  .nav-links a.active { color: var(--gold); }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .theme-toggle {
+    background: none; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer;
+    width: 34px; height: 34px; border-radius: 50%; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--gold); color: var(--gold); }
+  .nav-cart { position: relative; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; transition: color 0.2s; }
+  .nav-cart:hover { color: var(--gold); }
+  .cart-badge {
+    position: absolute; top: -6px; right: -8px; background: var(--gold); color: #000;
+    font-size: 0.6rem; font-weight: 700; width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ─── Page header ────────────────────────────── */
+  .page-header {
+    padding: 150px 5vw 60px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .breadcrumb { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.2rem; letter-spacing: 0.05em; }
+  .breadcrumb a { color: var(--text-muted); transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--gold); }
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 5rem);
+    letter-spacing: 0.03em; line-height: 1; color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+  .page-sub { font-size: 1rem; color: var(--text-muted); max-width: 500px; }
+
+  /* ─── Filter bar ─────────────────────────────── */
+  .filter-bar {
+    position: sticky; top: 68px; z-index: 50;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 1.4rem 5vw;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .filter-pills { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .filter-pill {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.55rem 1.2rem; cursor: pointer; transition: all 0.25s;
+  }
+  .filter-pill:hover { border-color: var(--purple); color: var(--purple); }
+  .filter-pill.active {
+    background: var(--gold); border-color: var(--gold); color: #000;
+    box-shadow: 0 0 14px rgba(212,175,55,0.4);
+  }
+  .results-count { font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.05em; white-space: nowrap; }
+
+  /* ─── Grid ───────────────────────────────────── */
+  .gallery { padding: 50px 5vw 110px; }
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .product-card {
+    background: var(--bg2); cursor: pointer; border: 1px solid transparent;
+    transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), border-color 0.3s;
+  }
+  .product-card:hover { transform: scale(1.035); z-index: 2; border-color: var(--gold-line); }
+  .product-img { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #fff; }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .product-card:hover .product-img img { transform: scale(1.14); }
+  .product-badge {
+    position: absolute; top: 1rem; left: 1rem; background: var(--purple); color: #fff;
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 0.28rem 0.6rem; box-shadow: 0 0 14px var(--purple-glow);
+  }
+  .product-info { padding: 1.2rem 0.2rem; }
+  .product-cat { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+  .product-name { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; line-height: 1.3; min-height: 2.4em; }
+  .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; letter-spacing: 0.05em; color: var(--text); }
+  .product-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+  .btn-add {
+    flex: 1; background: var(--gold); color: #000; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; border: none; padding: 0.7rem; cursor: pointer;
+    transition: box-shadow 0.3s, transform 0.2s;
+  }
+  .btn-add:hover { box-shadow: 0 0 18px rgba(212,175,55,0.5); transform: translateY(-1px); }
+  .btn-wish {
+    width: 38px; border: 1px solid var(--border); background: none; color: var(--text-muted);
+    cursor: pointer; font-size: 0.9rem; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-wish:hover { border-color: var(--purple); color: var(--purple); }
+  .product-card.hidden { display: none; }
+
+  /* ─── Footer (shared) ────────────────────────── */
+  footer { background: var(--bg); padding: 60px 5vw 30px; border-top: 1px solid var(--border); }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .footer-brand .logo { margin-bottom: 1rem; }
+  .footer-tagline { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; max-width: 240px; }
+  .footer-col-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); margin-bottom: 1.2rem; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .footer-links a { font-size: 0.85rem; color: var(--text-muted); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem; }
+  .footer-socials { display: flex; gap: 1rem; }
+  .footer-social {
+    width: 32px; height: 32px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: var(--text-muted); transition: border-color 0.2s, color 0.2s; cursor: pointer;
+  }
+  .footer-social:hover { border-color: var(--purple); color: var(--purple); }
+
+  @media (max-width: 900px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .page-header { padding: 120px 5vw 40px; }
+    .filter-bar { top: 0; position: static; }
+  }
+  @media (max-width: 520px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr; }
+    .gallery { padding: 40px 4vw 80px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="16" width="5" height="8" rx="1" fill="#D4AF37"/>
+      <rect x="33" y="16" width="5" height="8" rx="1" fill="#D4AF37"/>
+      <rect x="7" y="14" width="3" height="12" rx="1" fill="#D4AF37"/>
+      <rect x="30" y="14" width="3" height="12" rx="1" fill="#D4AF37"/>
+      <rect x="10" y="19" width="20" height="2" rx="1" fill="#D4AF37" opacity="0.4"/>
+      <polyline points="10,20 14,20 15.5,14 17,26 18.5,20 22,20 23.5,17 25,23 26.5,20 30,20"
+        stroke="#D4AF37" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    AdrenaLuxe
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="collections.html" class="active">Collections</a></li>
+    <li><a href="index.html#story">Our Story</a></li>
+    <li><a href="index.html#values">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeBtn" title="Toggle theme">☀</button>
+    <div class="nav-cart">🛒<span class="cart-badge">0</span></div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <p class="breadcrumb"><a href="index.html">Home</a> / Collections</p>
+  <h1 class="page-title">All Collections</h1>
+  <p class="page-sub">Premium fitness apparel and lifestyle essentials — every piece built for performance and priced for real life.</p>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-pills">
+    <button class="filter-pill active" data-filter="all">All Products</button>
+    <button class="filter-pill" data-filter="activewear">Activewear</button>
+    <button class="filter-pill" data-filter="accessories">Accessories</button>
+    <button class="filter-pill" data-filter="lifestyle">Lifestyle</button>
+  </div>
+  <p class="results-count"><span id="countNum">12</span> products</p>
+</div>
+
+<section class="gallery">
+  <div class="products-grid" id="productsGrid">
+
+    <a class="product-card" data-cat="lifestyle" href="https://adrenaluxe-jrb.printify.me/product/27013935" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d7fac8d135b912d0259a3/109413/104654/fitness-hoodie-beige.jpg?camera_label=front&revision=1778625036691&s=800" alt="Fitness Hoodie - Beige"/>
+        <span class="product-badge">Top Seller</span>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Lifestyle</p>
+        <p class="product-name">Fitness Hoodie — Beige</p>
+        <span class="product-price">$34.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27013935', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="lifestyle" href="https://adrenaluxe-jrb.printify.me/product/27013936" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d7fac8d135b912d0259a3/109413/104654/fitness-hoodie-beige.jpg?camera_label=front&revision=1778625036691&s=800" alt="Fitness Hoodie - Black" style="filter:grayscale(1) brightness(0.5)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Lifestyle</p>
+        <p class="product-name">Fitness Hoodie — Black</p>
+        <span class="product-price">$34.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27013936', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="activewear" href="https://adrenaluxe-jrb.printify.me/product/28679422" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/6a08f16cd8cb7913fd083e7a/12124/92570/heavy-cotton-tee-black.jpg?camera_label=front&revision=1778971164781&s=800" alt="Heavy Cotton Tee - Black"/>
+        <span class="product-badge">Top Seller</span>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Activewear</p>
+        <p class="product-name">Heavy Cotton Tee — Black</p>
+        <span class="product-price">$20.00</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/28679422', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="activewear" href="https://adrenaluxe-jrb.printify.me/product/28278594" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/6a08f16cd8cb7913fd083e7a/12124/92570/heavy-cotton-tee-black.jpg?camera_label=front&revision=1778971164781&s=800" alt="Heavy Cotton Tee - Beige" style="filter:sepia(0.4) brightness(1.3)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Activewear</p>
+        <p class="product-name">Heavy Cotton Tee — Beige</p>
+        <span class="product-price">$20.00</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/28278594', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="activewear" href="https://adrenaluxe-jrb.printify.me/product/27155065" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/69a75362e2353ca9ec0a80a1/19339/111806/womens-ideal-racerback-tank-mint-green.jpg?camera_label=front-2&revision=1776360052438&s=800" alt="Women's Ideal Racerback Tank - Mint Green"/>
+        <span class="product-badge">Top Seller</span>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Activewear</p>
+        <p class="product-name">Women's Racerback Tank — Mint</p>
+        <span class="product-price">$19.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27155065', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="activewear" href="https://adrenaluxe-jrb.printify.me/product/27155090" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/69a75362e2353ca9ec0a80a1/19339/111806/womens-ideal-racerback-tank-mint-green.jpg?camera_label=front-2&revision=1776360052438&s=800" alt="Women's Ideal Racerback Tank - Black" style="filter:grayscale(1) brightness(0.6)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Activewear</p>
+        <p class="product-name">Women's Racerback Tank — Black</p>
+        <span class="product-price">$19.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27155090', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="accessories" href="https://adrenaluxe-jrb.printify.me/product/27014063" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d86739906272d2901ebdc/119149/109608/embroidered-flat-bill-weightlifting-snapback-hat-red.jpg?camera_label=front&revision=1776360885174&s=800" alt="Embroidered Snapback Hat - Red"/>
+        <span class="product-badge">Top Seller</span>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Accessories</p>
+        <p class="product-name">Embroidered Snapback — Red</p>
+        <span class="product-price">$19.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27014063', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="accessories" href="https://adrenaluxe-jrb.printify.me/product/27014032" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d86739906272d2901ebdc/119149/109608/embroidered-flat-bill-weightlifting-snapback-hat-red.jpg?camera_label=front&revision=1776360885174&s=800" alt="Embroidered Barbell Flat Bill Cap" style="filter:grayscale(1) brightness(0.45)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Accessories</p>
+        <p class="product-name">Embroidered Barbell Flat Bill Cap</p>
+        <span class="product-price">$19.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27014032', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="lifestyle" href="https://adrenaluxe-jrb.printify.me/product/27013917" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d7fac8d135b912d0259a3/109413/104654/fitness-hoodie-beige.jpg?camera_label=front&revision=1778625036691&s=800" alt="Fitness Crewneck Sweatshirt" style="filter:grayscale(1) brightness(0.4)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Lifestyle</p>
+        <p class="product-name">Fitness Crewneck Sweatshirt</p>
+        <span class="product-price">$29.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27013917', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="accessories" href="https://adrenaluxe-jrb.printify.me/product/27155223" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d86739906272d2901ebdc/119149/109608/embroidered-flat-bill-weightlifting-snapback-hat-red.jpg?camera_label=front&revision=1776360885174&s=800" alt="Phone Stand" style="filter:grayscale(1) brightness(1.6) contrast(0.8)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Accessories</p>
+        <p class="product-name">Minimal White Phone Stand</p>
+        <span class="product-price">$14.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27155223', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="lifestyle" href="https://adrenaluxe-jrb.printify.me/product/27013950" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/699d7fac8d135b912d0259a3/109413/104654/fitness-hoodie-beige.jpg?camera_label=front&revision=1778625036691&s=800" alt="Classic Beige Crewneck Sweatshirt"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Lifestyle</p>
+        <p class="product-name">Classic Beige Crewneck</p>
+        <span class="product-price">$29.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27013950', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+    <a class="product-card" data-cat="activewear" href="https://adrenaluxe-jrb.printify.me/product/27155111" target="_blank" rel="noopener">
+      <div class="product-img">
+        <img src="https://images-api.printify.com/mockup/69a75362e2353ca9ec0a80a1/19339/111806/womens-ideal-racerback-tank-mint-green.jpg?camera_label=front-2&revision=1776360052438&s=800" alt="Women's Ideal Racerback Tank - Navy" style="filter:hue-rotate(180deg) brightness(0.7)"/>
+      </div>
+      <div class="product-info">
+        <p class="product-cat">Activewear</p>
+        <p class="product-name">Women's Racerback Tank — Navy</p>
+        <span class="product-price">$19.99</span>
+        <div class="product-actions">
+          <button class="btn-add" onclick="event.preventDefault(); window.open('https://adrenaluxe-jrb.printify.me/product/27155111', '_blank')">Buy on Printify ↗</button>
+          <button class="btn-wish" onclick="event.preventDefault()">♡</button>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="16" width="5" height="8" rx="1" fill="#D4AF37"/>
+          <rect x="33" y="16" width="5" height="8" rx="1" fill="#D4AF37"/>
+          <rect x="7" y="14" width="3" height="12" rx="1" fill="#D4AF37"/>
+          <rect x="30" y="14" width="3" height="12" rx="1" fill="#D4AF37"/>
+          <rect x="10" y="19" width="20" height="2" rx="1" fill="#D4AF37" opacity="0.4"/>
+          <polyline points="10,20 14,20 15.5,14 17,26 18.5,20 22,20 23.5,17 25,23 26.5,20 30,20"
+            stroke="#D4AF37" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        AdrenaLuxe
+      </div>
+      <p class="footer-tagline">Premium fitness apparel and lifestyle essentials designed for everyday excellence.</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Shop</p>
+      <ul class="footer-links">
+        <li><a href="collections.html?cat=activewear">Activewear</a></li>
+        <li><a href="collections.html?cat=accessories">Accessories</a></li>
+        <li><a href="collections.html?cat=lifestyle">Lifestyle</a></li>
+        <li><a href="collections.html">New Arrivals</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Company</p>
+      <ul class="footer-links">
+        <li><a href="index.html#story">Our Story</a></li>
+        <li><a href="coming-soon.html">Sustainability</a></li>
+        <li><a href="coming-soon.html">Press</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Support</p>
+      <ul class="footer-links">
+        <li><a href="coming-soon.html">FAQ</a></li>
+        <li><a href="coming-soon.html">Shipping & Returns</a></li>
+        <li><a href="coming-soon.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 AdrenaLuxe. All rights reserved.</span>
+    <div class="footer-socials">
+      <div class="footer-social">IG</div>
+      <div class="footer-social">TT</div>
+      <div class="footer-social">YT</div>
+      <div class="footer-social">X</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  btn.addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    btn.textContent = isDark ? '☾' : '☀';
+  });
+
+  // ─── Filtering ───────────────────────────────
+  const pills = document.querySelectorAll('.filter-pill');
+  const cards = document.querySelectorAll('.product-card');
+  const countNum = document.getElementById('countNum');
+
+  function applyFilter(filter) {
+    let visible = 0;
+    cards.forEach(card => {
+      const match = filter === 'all' || card.dataset.cat === filter;
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    countNum.textContent = visible;
+  }
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      applyFilter(pill.dataset.filter);
+    });
+  });
+
+  // Respect ?cat= query param from homepage category links
+  const params = new URLSearchParams(window.location.search);
+  const catParam = params.get('cat');
+  if (catParam) {
+    const match = [...pills].find(p => p.dataset.filter === catParam);
+    if (match) match.click();
+  } else {
+    applyFilter('all');
+  }
+</script>
+</body>
+</html>
